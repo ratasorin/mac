@@ -1,8 +1,8 @@
-function [lower_triangular_matrix, solutions] = gauss_solve_sistem(matrix, free_terms)
+function [lower_triangular_matrix, solutions] = gauss_solve_system(matrix, free_terms)
 [matrix_row_size, matrix_column_size] = size(matrix);
 
 if(matrix_row_size ~= matrix_column_size)
-    error = MException("gauss_solve_sistem:non_square_matrix", "The matrix is not square!");
+    error = MException("gauss_solve_system:non_square_matrix", "The matrix is not square!");
     throw(error);
 end
 
@@ -10,7 +10,7 @@ matrix_size = matrix_row_size;
 
 for i = 1 : matrix_size - 1;
     if(matrix(i, i) == 0)
-        error = MException("gauss_solve_sistem:pivot_zero", "The pivot is 0! Cannot divide!");
+        error = MException("gauss_solve_system:pivot_zero", "The pivot is 0! Cannot divide!");
         throw(error);
     end
 
