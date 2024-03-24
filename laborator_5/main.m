@@ -44,22 +44,74 @@ total_deviation = norm(approximation_errors(best_biases));
 remp = total_deviation / sqrt(length(h)); % remp = 0.7547
 
 % 4. petrol production by year (in million of barrels)
-year = [1994; 1995; 1996; 1997; 1998; 1999; 2000; 2001; 2002; 2003];
+production_year = [1994; 1995; 1996; 1997; 1998; 1999; 2000; 2001; 2002; 2003];
 production = [67.052; 68.008; 69.803; 72.024; 73.400; 72.063; 74.669; 74.487; 74.065; 76.777];
 
-% task 1: find the best line that best approximates this data
-% we want to find the best parameters "a", "b" to approximate the system: a * year + b = production
-% this yields the system: A * [a; b] = production, where:
-b_coefficients = year.^0; % [1; 1; ...; 1]
-A = [year b_coefficients];
+% task 1: find the **line** that best approximates this data
+% we want to find the best parameters "m", "n" to approximate the system: m * year + n = production
+% this yields the system: LINE * [m; n] = production, where:
+m_coefficients = production_year.^1; % [67.052; 68.008; ...; 76.777]
+n_coefficients = production_year.^0; % [1; 1; ...; 1]
+LINE = [m_coefficients n_coefficients];
 
 % this will be an inconsistent system so we can use QR factorization to solve for it:  
-params = qr_solve_system(A, production);
-a = params(1)
-b = params(2)
+params = qr_solve_system(LINE, production);
+m = params(1);
+n = params(2);
 
-best_approximation_line = @(x) a * x + b;
+best_approximation_line = @(x) m * x + n;
 fplot(best_approximation_line, [1994 2003]);
 hold on 
-plot(year, production, ".");
+plot(production_year, production, ".");
 hold off
+
+% task 2: find the **parabola** that best approximates this data
+% we want to find the best parameters "a", "b", "c" to approximate the system: a * year^2 + b * year + c = production
+% this yields the system: PARABOLA * [a; b; c] = production, where:
+c_coefficients = production_year.^0;
+b_coefficients = production_year.^1;
+a_coefficients = production_year.^2;
+PARABOLA = [a_coefficients b_coefficients c_coefficients];
+
+% this will again be an inconsistent system so just solve it:
+params = PARABOLA\production;
+a = params(1);
+b = params(2);
+c = params(3);
+
+best_approximation_parabola = @(x) a * x^2 + b * x + c; % here the matlab console will print a warning, ignore it.
+fplot(best_approximation_parabola, [1994 2003]);
+hold on 
+plot(production_year, production, ".");
+hold off
+
+% task 3: find the **cubic curve** that best approximates this data
+% we want to find parameters "c0", "c1", "c2", "c3" to approximate the system: c3 * x^3 + c2 * x ^ 2 + c1 * x + c0 = y 
+% this yields the system: CUBIC * [c0; c1; c2; c3] = production, where:
+c0_coefficients = production_year.^0;
+c1_coefficients = production_year.^1;
+c2_coefficients = production_year.^2;
+c3_coefficients = production_year.^3;
+
+CUBIC = [c0_coefficients c1_coefficients c2_coefficients c3_coefficients];
+cubic_params = CUBIC\production;
+c0 = cubic_params(1)
+c1 = cubic_params(2)
+c2 = cubic_params(3)
+c3 = cubic_params(4)
+
+best_approximation_cubic = @(x) c0 + c1 * x + c2 * x^2 + c3 * x^3; % here the matlab console will print a warning, ignore it.
+fplot(best_approximation_cubic, [1994 2003]);
+hold on 
+plot(production_year, production, ".");
+hold off
+
+% task 4: predict oil production in 2018
+linear_prediction = best_approximation_line(2018) % 91.1370
+parabola_prediction = best_approximation_parabola(2018) % 64.2220
+cubic_prediction = best_approximation_cubic(2018) % wrong answer in the textbook ???
+
+% task 5: remp of models
+linear_remp = norm(arrayfun(best_approximation_line, production_year) - production) / sqrt(length(production_year))
+parabola_remp = norm(arrayfun(best_approximation_parabola, production_year) - production) / sqrt(length(production_year))
+cubic_remp = norm(arrayfun(best_approximation_cubic, production_year) - production) / sqrt(length(production_year))
