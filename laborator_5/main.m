@@ -107,11 +107,44 @@ plot(production_year, production, ".");
 hold off
 
 % task 4: predict oil production in 2018
-linear_prediction = best_approximation_line(2018) % 91.1370
-parabola_prediction = best_approximation_parabola(2018) % 64.2220
-cubic_prediction = best_approximation_cubic(2018) % wrong answer in the textbook ???
+linear_prediction = best_approximation_line(2018); % 91.1370
+parabola_prediction = best_approximation_parabola(2018); % 64.2220
+cubic_prediction = best_approximation_cubic(2018); % wrong answer in the textbook ???
 
 % task 5: remp of models
-linear_remp = norm(arrayfun(best_approximation_line, production_year) - production) / sqrt(length(production_year))
-parabola_remp = norm(arrayfun(best_approximation_parabola, production_year) - production) / sqrt(length(production_year))
-cubic_remp = norm(arrayfun(best_approximation_cubic, production_year) - production) / sqrt(length(production_year))
+linear_remp = norm(arrayfun(best_approximation_line, production_year) - production) / sqrt(length(production_year));
+parabola_remp = norm(arrayfun(best_approximation_parabola, production_year) - production) / sqrt(length(production_year));
+cubic_remp = norm(arrayfun(best_approximation_cubic, production_year) - production) / sqrt(length(production_year));
+
+% 5. japan petrol consumption (in mega barrels per day)
+monthly_consumption_2003 = [6.224; 6.665; 6.241; 5.302; 5.073; 5.127; 4.994; 5.012; 5.108; 5.377; 5.510; 6.372];
+
+% we want to use a periodic model: y(t) = c1 + c2*cos(2πt) + c3*sin(2πt) + c4*cos(4πt) to approximate consumption "y(t)" based on the current month "t"
+% to do that we need to find the coefficients [c1; c2; c3; c4].
+% we know that: 
+% y(month 1) = 6.224 => c1 + c2*cos(2π) + c3*sin(2π) + c4*cos(4π) = 6.224
+% y(month 2) = 6.665 => c1 + c2*cos(4π) + c3*sin(4π) + c4*cos(8π) = 6.665
+% ...
+% y(month 12) = 6.372 => c1 + c2*cos(12 * 2π) + c3*sin(12 * 2π) + c4*cos(12 * 4π) = 6.372
+% thus we get an inconsistent system: C * [c1; c2; c3; c4] = [6.224; 6.665; ...; 6.372]
+
+C = zeros(number_of_months, number_of_coefficients);
+
+% here we need to do a trick! We cannot use whole numbers from 1 to 12 because that will give a rank 1 matrix with identical rows and columns
+% instead we need to normalize our data into a [0 1] range:
+normalized_input = ([1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12] - 1) / 12;
+
+for i = 1 : length(normalized_input)
+    c1_coefficient = 1;
+    c2_coefficient = cos(2 * pi * normalized_input(i));
+    c3_coefficient = sin(2 * pi* normalized_input(i));
+    c4_coefficient = cos(4 * pi * normalized_input(i));
+    C(i, :) = [c1_coefficient c2_coefficient c3_coefficient c4_coefficient];
+end 
+
+c = C\monthly_consumption_2003; % c = [5.5838 0.7541 0.1220 0.1935]
+
+f = @(t) c(1) + c(2)*cos(2 * pi * t) + c(3)*sin(2 * pi * t) + c(4)*cos(4 * pi * t); 
+
+consumption_approximation_error = arrayfun(f, normalized_input) - monthly_consumption_2003;
+remp = norm(consumption_approximation_error) / sqrt(length(normalized_input)); % 0.1836
