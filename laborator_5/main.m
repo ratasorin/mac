@@ -40,5 +40,26 @@ approximation_errors = @(bias) bias(1)*h.^bias(2) - y;
 jacobian_errors = @(bias) [h.^bias(2), bias(1)*h.^bias(2).*log(h)];
 
 best_biases = gauss_newton(approximation_errors, jacobian_errors, 10, [16 3]) % bias = (15.8854 2.5336)
-total_deviation = norm(approximation_errors(best_biases))
-remp = total_deviation / sqrt(length(h)) % remp = 0.7547
+total_deviation = norm(approximation_errors(best_biases));
+remp = total_deviation / sqrt(length(h)); % remp = 0.7547
+
+% 4. petrol production by year (in million of barrels)
+year = [1994; 1995; 1996; 1997; 1998; 1999; 2000; 2001; 2002; 2003];
+production = [67.052; 68.008; 69.803; 72.024; 73.400; 72.063; 74.669; 74.487; 74.065; 76.777];
+
+% task 1: find the best line that best approximates this data
+% we want to find the best parameters "a", "b" to approximate the system: a * year + b = production
+% this yields the system: A * [a; b] = production, where:
+b_coefficients = year.^0; % [1; 1; ...; 1]
+A = [year b_coefficients];
+
+% this will be an inconsistent system so we can use QR factorization to solve for it:  
+params = qr_solve_system(A, production);
+a = params(1)
+b = params(2)
+
+best_approximation_line = @(x) a * x + b;
+fplot(best_approximation_line, [1994 2003]);
+hold on 
+plot(year, production, ".");
+hold off
