@@ -1,22 +1,8 @@
 % solve an inconsistent system using the QR factorization
-A = [4 2 3 0;-2 3 -1 1; 1 3 -4 2; 1 0 1 -1; 3 1 3 -2];
+A = [4 2 3 0; -2 3 -1 1; 1 3 -4 2; 1 0 1 -1; 3 1 3 -2];
 b = [10; 0; 2; 0; 5];
 
-[Q, R] = qr_factorization(A);
-
-[column_size_A, row_size_A] = size(A);
-n = min(row_size_A, column_size_A);
-
-% QRx = b => Rx = transpose(Q) * b
-b = transpose(Q) * b;
-
-% only pick the first "n" non-zero entries
-b = b(1 : n, 1);
-
-% only pick the first "n*n" non-zero entries
-R = R(1 : n, 1 : n);
-
-solve_upper_triangular(R, b)
+qr_solve_system(A, b)  % should be [1.2739; 0.6885; 1.2124; 1.7497]
 
 % 10. The minimum distance between a moving point "A" and 3 fixed circles
 circle_0_origin = [0 1];

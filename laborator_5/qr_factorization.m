@@ -1,9 +1,9 @@
 function [Q, R] = qr_factorization (A)
-    [column_number, row_size] = size(A);
-    projections = zeros(row_size, column_number);
-    Q = zeros(row_size, column_number);
+    [rows, columns] = size(A);
+    projections = zeros(rows, columns);
+    Q = zeros(rows, columns);
 
-    for i = 1 : row_size
+    for i = 1 : columns
         column = A(:, i);
         projections(:, i) = column;
         for j = 2 : i
@@ -13,7 +13,6 @@ function [Q, R] = qr_factorization (A)
         Q(:, i) = projections(:, i) / norm(projections(:, i));
     end
 
-    % A = QR
-    % transpose(Q) * A = R;
+    % A = QR => transpose(Q) * A = R;
     R = transpose(Q) * A;
 end
