@@ -30,3 +30,7 @@ abs(computed_y - actual_y); % error should be -2.3349e-05
 computed_y = compute_newton_polynomial(coefficients, x, 0.98);
 actual_y = f(0.98);
 abs(computed_y - actual_y); % error should be 1.0661e-04
+
+x=[1;1;3;2];
+y=[1;3;3;2];
+bezier_curve_plot(x, y);
