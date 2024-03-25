@@ -34,3 +34,13 @@ abs(computed_y - actual_y); % error should be 1.0661e-04
 x=[1;1;3;2];
 y=[1;3;3;2];
 bezier_curve_plot(x, y);
+
+% 4. use cebisev nodes to build a 3rd degree polynomial that approximates sin on [0, pi/2] 
+cebisev_nodes = get_cebisev_nodes(0, pi / 2, 4);
+y = arrayfun(@(t) sin(t), cebisev_nodes)
+coefficients = newton_polynomial_coefficients(cebisev_nodes, y) % should be [0.9982 0.2669 -0.4186 -0.1143]
+
+% show how the approximation is doing on [-2, 2]
+fplot(@(t) compute_newton_polynomial(coefficients, cebisev_nodes, t), [-2 2], 'Linewidth',2);
+hold on;
+fplot(@(t) sin(t), [-2 2], '--r');

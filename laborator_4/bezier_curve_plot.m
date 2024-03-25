@@ -1,5 +1,6 @@
 function bezier_curve_plot(x, y)
     [coefficients_x, coefficients_y] = bezier_curve_coefficients(x, y);
+    
     plot([x(1) x(2)],[y(1) y(2)],"r:",x(2),y(2),"rs");
     hold on;
     plot([x(3) x(4)],[y(3) y(4)],"r:",x(3),y(3),"rs");
@@ -17,7 +18,7 @@ function bezier_curve_plot(x, y)
     % (x, y) = (fx(t), fy(t))
     computed_x = arrayfun(fx, t);
     computed_y = arrayfun(fy, t);
-    
+
     plot(computed_x, computed_y);
     hold off;
 end 
